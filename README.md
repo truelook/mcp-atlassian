@@ -53,6 +53,41 @@ Add to your Claude Desktop or Cursor MCP configuration:
 
 > **Server/Data Center users**: Use `JIRA_PERSONAL_TOKEN` instead of `JIRA_USERNAME` + `JIRA_API_TOKEN`. See [Authentication](https://personal-1d37018d.mintlify.app/docs/authentication) for details.
 
+<details>
+<summary><strong>Service Account Setup</strong></summary>
+
+For automated integrations, you can use an [Atlassian Service Account](https://support.atlassian.com/organization-administration/docs/manage-an-organization-with-service-accounts/) instead of a personal account. Service accounts require a Cloud ID.
+
+**Get your Cloud ID:**
+```bash
+curl -s "https://your-company.atlassian.net/_edge/tenant_info" | jq -r '.cloudId'
+```
+
+**Configure with service account:**
+```json
+{
+  "mcpServers": {
+    "mcp-atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "ATLASSIAN_CLOUD_ID": "your-cloud-id",
+        "JIRA_URL": "https://your-company.atlassian.net",
+        "JIRA_USERNAME": "your-service-account@serviceaccount.atlassian.com",
+        "JIRA_API_TOKEN": "service_account_api_token",
+        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",
+        "CONFLUENCE_USERNAME": "your-service-account@serviceaccount.atlassian.com",
+        "CONFLUENCE_API_TOKEN": "service_account_api_token"
+      }
+    }
+  }
+}
+```
+
+Service accounts are automatically detected by usernames ending in `@serviceaccount.atlassian.com` and will use the `api.atlassian.com` endpoint.
+
+</details>
+
 ### 3. Start Using
 
 Ask your AI assistant to:

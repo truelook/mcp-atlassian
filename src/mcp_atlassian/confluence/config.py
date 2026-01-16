@@ -21,6 +21,7 @@ class ConfluenceConfig:
     Handles authentication for Confluence Cloud and Server/Data Center:
     - Cloud: username/API token (basic auth) or OAuth 2.0 (3LO)
     - Server/DC: personal access token or basic auth
+    - Service accounts: basic auth with api.atlassian.com URL
     """
 
     url: str  # Base URL for Confluence
@@ -31,6 +32,7 @@ class ConfluenceConfig:
     oauth_config: OAuthConfig | BYOAccessTokenOAuthConfig | None = None
     ssl_verify: bool = True  # Whether to verify SSL certificates
     spaces_filter: str | None = None  # List of space keys to filter searches
+    cloud_id: str | None = None  # Cloud ID for service accounts
     http_proxy: str | None = None  # HTTP proxy URL
     https_proxy: str | None = None  # HTTPS proxy URL
     no_proxy: str | None = None  # Comma-separated list of hosts to bypass proxy
@@ -39,6 +41,17 @@ class ConfluenceConfig:
     client_cert: str | None = None  # Client certificate file path (.pem)
     client_key: str | None = None  # Client private key file path (.pem)
     client_key_password: str | None = None  # Password for encrypted private key
+
+    @property
+    def is_service_account(self) -> bool:
+        """Check if this is a service account.
+
+        Returns:
+            True if username ends with @serviceaccount.atlassian.com
+        """
+        return bool(
+            self.username and self.username.endswith("@serviceaccount.atlassian.com")
+        )
 
     @property
     def is_cloud(self) -> bool:
@@ -128,6 +141,9 @@ class ConfluenceConfig:
         # Get the spaces filter if provided
         spaces_filter = os.getenv("CONFLUENCE_SPACES_FILTER")
 
+        # Get cloud_id for service accounts
+        cloud_id = os.getenv("CONFLUENCE_CLOUD_ID") or os.getenv("ATLASSIAN_CLOUD_ID")
+
         # Proxy settings
         http_proxy = os.getenv("CONFLUENCE_HTTP_PROXY", os.getenv("HTTP_PROXY"))
         https_proxy = os.getenv("CONFLUENCE_HTTPS_PROXY", os.getenv("HTTPS_PROXY"))
@@ -151,6 +167,7 @@ class ConfluenceConfig:
             oauth_config=oauth_config,
             ssl_verify=ssl_verify,
             spaces_filter=spaces_filter,
+            cloud_id=cloud_id,
             http_proxy=http_proxy,
             https_proxy=https_proxy,
             no_proxy=no_proxy,

@@ -69,19 +69,45 @@ class ConfluenceClient:
                 verify_ssl=self.config.ssl_verify,
             )
         else:  # basic auth
-            logger.debug(
-                f"Initializing Confluence client with Basic auth. "
-                f"URL: {self.config.url}, Username: {self.config.username}, "
-                f"API Token present: {bool(self.config.api_token)}, "
-                f"Is Cloud: {self.config.is_cloud}"
-            )
-            self.confluence = Confluence(
-                url=self.config.url,
-                username=self.config.username,
-                password=self.config.api_token,  # API token is used as password
-                cloud=self.config.is_cloud,
-                verify_ssl=self.config.ssl_verify,
-            )
+            # Check if this is a service account requiring api.atlassian.com URL
+            if self.config.is_service_account:
+                if not self.config.cloud_id:
+                    error_msg = (
+                        "Service accounts require CONFLUENCE_CLOUD_ID or "
+                        "ATLASSIAN_CLOUD_ID environment variable to be set"
+                    )
+                    raise ValueError(error_msg)
+
+                # Service accounts use api.atlassian.com with basic auth
+                api_url = (
+                    f"https://api.atlassian.com/ex/confluence/{self.config.cloud_id}"
+                )
+                logger.debug(
+                    f"Initializing Confluence client with Service Account auth. "
+                    f"API URL: {api_url}, Username: {self.config.username}, "
+                    f"Cloud ID: {self.config.cloud_id}"
+                )
+                self.confluence = Confluence(
+                    url=api_url,
+                    username=self.config.username,
+                    password=self.config.api_token,
+                    cloud=True,  # Service accounts always use Cloud API
+                    verify_ssl=self.config.ssl_verify,
+                )
+            else:
+                logger.debug(
+                    f"Initializing Confluence client with Basic auth. "
+                    f"URL: {self.config.url}, Username: {self.config.username}, "
+                    f"API Token present: {bool(self.config.api_token)}, "
+                    f"Is Cloud: {self.config.is_cloud}"
+                )
+                self.confluence = Confluence(
+                    url=self.config.url,
+                    username=self.config.username,
+                    password=self.config.api_token,  # API token is used as password
+                    cloud=self.config.is_cloud,
+                    verify_ssl=self.config.ssl_verify,
+                )
             logger.debug(
                 f"Confluence client initialized. "
                 f"Session headers (Authorization masked): "
