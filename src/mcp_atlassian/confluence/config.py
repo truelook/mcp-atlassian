@@ -98,8 +98,15 @@ class ConfluenceConfig:
             raise ValueError(error_msg)
 
         # Determine authentication type based on available environment variables
-        username = os.getenv("CONFLUENCE_USERNAME")
-        api_token = os.getenv("CONFLUENCE_API_TOKEN")
+        # Fall back to shared ATLASSIAN_EMAIL/ATLASSIAN_USERNAME/ATLASSIAN_API_TOKEN if service-specific not set
+        username = (
+            os.getenv("CONFLUENCE_USERNAME")
+            or os.getenv("ATLASSIAN_EMAIL")
+            or os.getenv("ATLASSIAN_USERNAME")
+        )
+        api_token = os.getenv("CONFLUENCE_API_TOKEN") or os.getenv(
+            "ATLASSIAN_API_TOKEN"
+        )
         personal_token = os.getenv("CONFLUENCE_PERSONAL_TOKEN")
 
         # Check for OAuth configuration

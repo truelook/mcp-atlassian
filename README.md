@@ -37,17 +37,17 @@ Add to your Claude Desktop or Cursor MCP configuration:
       "command": "uvx",
       "args": ["mcp-atlassian"],
       "env": {
+        "ATLASSIAN_EMAIL": "your.email@company.com",
+        "ATLASSIAN_API_TOKEN": "your_api_token",
         "JIRA_URL": "https://your-company.atlassian.net",
-        "JIRA_USERNAME": "your.email@company.com",
-        "JIRA_API_TOKEN": "your_api_token",
-        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "your.email@company.com",
-        "CONFLUENCE_API_TOKEN": "your_api_token"
+        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki"
       }
     }
   }
 }
 ```
+
+> You can also use `ATLASSIAN_USERNAME` instead of `ATLASSIAN_EMAIL`. Service-specific credentials (`JIRA_USERNAME`/`JIRA_API_TOKEN` and `CONFLUENCE_USERNAME`/`CONFLUENCE_API_TOKEN`) take precedence over shared credentials.
 
 > **Python 3.14 not yet supported.** Use `["--python=3.12", "mcp-atlassian"]` as args if needed.
 
@@ -72,12 +72,10 @@ curl -s "https://your-company.atlassian.net/_edge/tenant_info" | jq -r '.cloudId
       "args": ["mcp-atlassian"],
       "env": {
         "ATLASSIAN_CLOUD_ID": "your-cloud-id",
+        "ATLASSIAN_EMAIL": "your-service-account@serviceaccount.atlassian.com",
+        "ATLASSIAN_API_TOKEN": "service_account_api_token",
         "JIRA_URL": "https://your-company.atlassian.net",
-        "JIRA_USERNAME": "your-service-account@serviceaccount.atlassian.com",
-        "JIRA_API_TOKEN": "service_account_api_token",
-        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki",
-        "CONFLUENCE_USERNAME": "your-service-account@serviceaccount.atlassian.com",
-        "CONFLUENCE_API_TOKEN": "service_account_api_token"
+        "CONFLUENCE_URL": "https://your-company.atlassian.net/wiki"
       }
     }
   }

@@ -43,18 +43,32 @@ def get_available_services() -> dict[str, bool | None]:
                 "with provided access token"
             )
         elif is_cloud:  # Cloud non-OAuth
-            if all(
-                [
-                    os.getenv("CONFLUENCE_USERNAME"),
-                    os.getenv("CONFLUENCE_API_TOKEN"),
-                ]
-            ):
+            # Check service-specific or shared credentials
+            username = (
+                os.getenv("CONFLUENCE_USERNAME")
+                or os.getenv("ATLASSIAN_EMAIL")
+                or os.getenv("ATLASSIAN_USERNAME")
+            )
+            token = os.getenv("CONFLUENCE_API_TOKEN") or os.getenv(
+                "ATLASSIAN_API_TOKEN"
+            )
+            if username and token:
                 confluence_is_setup = True
                 logger.info("Using Confluence Cloud Basic Authentication (API Token)")
         else:  # Server/Data Center non-OAuth
-            if os.getenv("CONFLUENCE_PERSONAL_TOKEN") or (
-                os.getenv("CONFLUENCE_USERNAME") and os.getenv("CONFLUENCE_API_TOKEN")
-            ):
+            username = (
+                os.getenv("CONFLUENCE_USERNAME")
+                or os.getenv("ATLASSIAN_EMAIL")
+                or os.getenv("ATLASSIAN_USERNAME")
+            )
+            token = os.getenv("CONFLUENCE_API_TOKEN") or os.getenv(
+                "ATLASSIAN_API_TOKEN"
+            )
+            username = os.getenv("CONFLUENCE_USERNAME") or os.getenv("ATLASSIAN_EMAIL")
+            token = os.getenv("CONFLUENCE_API_TOKEN") or os.getenv(
+                "ATLASSIAN_API_TOKEN"
+            )
+            if os.getenv("CONFLUENCE_PERSONAL_TOKEN") or (username and token):
                 confluence_is_setup = True
                 logger.info(
                     "Using Confluence Server/Data Center authentication (PAT or Basic Auth)"
@@ -96,18 +110,24 @@ def get_available_services() -> dict[str, bool | None]:
                 "with provided access token"
             )
         elif is_cloud:  # Cloud non-OAuth
-            if all(
-                [
-                    os.getenv("JIRA_USERNAME"),
-                    os.getenv("JIRA_API_TOKEN"),
-                ]
-            ):
+            # Check service-specific or shared credentials
+            username = (
+                os.getenv("JIRA_USERNAME")
+                or os.getenv("ATLASSIAN_EMAIL")
+                or os.getenv("ATLASSIAN_USERNAME")
+            )
+            token = os.getenv("JIRA_API_TOKEN") or os.getenv("ATLASSIAN_API_TOKEN")
+            if username and token:
                 jira_is_setup = True
                 logger.info("Using Jira Cloud Basic Authentication (API Token)")
         else:  # Server/Data Center non-OAuth
-            if os.getenv("JIRA_PERSONAL_TOKEN") or (
-                os.getenv("JIRA_USERNAME") and os.getenv("JIRA_API_TOKEN")
-            ):
+            username = (
+                os.getenv("JIRA_USERNAME")
+                or os.getenv("ATLASSIAN_EMAIL")
+                or os.getenv("ATLASSIAN_USERNAME")
+            )
+            token = os.getenv("JIRA_API_TOKEN") or os.getenv("ATLASSIAN_API_TOKEN")
+            if os.getenv("JIRA_PERSONAL_TOKEN") or (username and token):
                 jira_is_setup = True
                 logger.info(
                     "Using Jira Server/Data Center authentication (PAT or Basic Auth)"

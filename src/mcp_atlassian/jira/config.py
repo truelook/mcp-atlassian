@@ -101,8 +101,13 @@ class JiraConfig:
             raise ValueError(error_msg)
 
         # Determine authentication type based on available environment variables
-        username = os.getenv("JIRA_USERNAME")
-        api_token = os.getenv("JIRA_API_TOKEN")
+        # Fall back to shared ATLASSIAN_EMAIL/ATLASSIAN_USERNAME/ATLASSIAN_API_TOKEN if service-specific not set
+        username = (
+            os.getenv("JIRA_USERNAME")
+            or os.getenv("ATLASSIAN_EMAIL")
+            or os.getenv("ATLASSIAN_USERNAME")
+        )
+        api_token = os.getenv("JIRA_API_TOKEN") or os.getenv("ATLASSIAN_API_TOKEN")
         personal_token = os.getenv("JIRA_PERSONAL_TOKEN")
 
         # Check for OAuth configuration

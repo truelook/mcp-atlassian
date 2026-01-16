@@ -94,9 +94,7 @@ class JiraClient:
                     raise ValueError(error_msg)
 
                 # Service accounts use api.atlassian.com with basic auth
-                api_url = (
-                    f"https://api.atlassian.com/ex/jira/{self.config.cloud_id}"
-                )
+                api_url = f"https://api.atlassian.com/ex/jira/{self.config.cloud_id}"
                 logger.debug(
                     f"Initializing Jira client with Service Account auth. "
                     f"API URL: {api_url}, Username: {self.config.username}, "
